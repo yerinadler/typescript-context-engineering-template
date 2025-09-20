@@ -1,5 +1,0 @@
-# Conventions
-
-## Coding Styles
-
-## 

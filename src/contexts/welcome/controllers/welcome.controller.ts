@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { createSuccessResponse } from '../../../shared/api';
 import { BaseController } from '../../../shared/controller/base';
 
 export class WelcomeController extends BaseController {
@@ -13,8 +14,7 @@ export class WelcomeController extends BaseController {
 
   private hello(req: Request, res: Response) {
     const name = req.params.name;
-    res.json({
-      message: `hello ${name}`,
-    });
+    const response = createSuccessResponse('WELCOME_000', `hello ${name}`);
+    res.json(response);
   }
 }

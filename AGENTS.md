@@ -1,11 +1,14 @@
 # AGENTS Guideline for the repository
 This file provides a guidance for AI coding agent for this project
 
-## Common Commands
+## Project Awareness & Contextual Information
+- Always check the `docs/` folder
+- Always check the `doc/` folder within each of the bounded contexts for detailed implementation guideline e.g. `contexts/welcome/docs/` for the **welcome** bounded context
 
+## Common Commands
 ### Development
-- `pnpm add` - Install dependencies
-- `pnpm add -D` - Install development dependencies
+- `pnpm add <package>` - Install dependencies
+- `pnpm add -D <package>` - Install development dependencies
 - `pnpm dev` - Run in development mode with hot reload
 
 ### Linting and Formatting
@@ -20,9 +23,15 @@ This project follows hybrid Clean & Onion Architecture; a dependency-inverted la
 
 For more details, check out the @/docs/ARCHITECTURE.md
 
+Since this is a modular monolith application, each bounded context inside `contexts` directory can uses different architectures. For more details, consult each context's `docs/ARCHITECTURE.md` with frontmatter definition for the architecture to implement e.g. Clean Architecture
+
 ## Code Structure & Modularity
 - Never create a file longer than 500 lines of code. If the limit is approached, try to split the file into separate modules
 - Follow the conventions defined in the `eslint.config.mjs` and `prettier.config.cjs` strictly.
+
+## Styles & Conventions
+- Use **Typescript** only, do not mix Javascript in all cases!
+- 
 
 ## Testing & Quality Control
 Be pragmatic on testing, 100% coverage is bullshit! Follow these guidelines:
@@ -35,7 +44,8 @@ Be pragmatic on testing, 100% coverage is bullshit! Follow these guidelines:
 ## Task Completion
 - When working on the new feature, be sure to create a new short-lived branch out of the trunk (main)
 - Upon finishing the task, update the `TASKS.md` immediately.
-- Commit the code atomically using `Conventional Commit` e.g. chore, feat, etc.
+- Add new sub-tasks or TODOs discovered during development to `TASKS.md` under a “Discovered During Work” section.
+
 
 ## Documentation
 - Update the `README.md` file accordingly when new features are added to the project.
