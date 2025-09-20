@@ -1,7 +1,10 @@
 import { ApplicationErrorCode, errorCodes } from './error-codes';
 
 export class ApplicationError extends Error {
-  constructor(public readonly errorCode: ApplicationErrorCode, message: string) {
+  constructor(
+    public readonly errorCode: ApplicationErrorCode,
+    message: string,
+  ) {
     super(message);
     this.name = 'ApplicationError';
     Object.setPrototypeOf(this, new.target.prototype);

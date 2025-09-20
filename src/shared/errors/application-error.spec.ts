@@ -1,8 +1,4 @@
-import {
-  ApplicationError,
-  BadRequestError,
-  errorCodes,
-} from './index';
+import { ApplicationError, BadRequestError, errorCodes } from './index';
 
 describe('ApplicationError', () => {
   it('extends the native Error object', () => {
