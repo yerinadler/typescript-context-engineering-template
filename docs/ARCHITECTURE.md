@@ -9,7 +9,7 @@ Each bounded context or module is free to choose the architecture of choice e.g.
 
 ## Key Architectural Principles
 - Flexibility over rigid structure - the module can choose any patterns or conventions without relying on a single rigid structure.
-- Scalable as one
+- Scalable as one unit
 
 ## Project Structure
 - The `src` folder contains all the code related to the project

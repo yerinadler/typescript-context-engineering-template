@@ -35,7 +35,8 @@ The `src/contexts/` contains modules or bounded contexts. Each of them contains 
 ├── BOUNDED_CONTEXT.md
 ├── docs
 │   ├── CONVENTIONS.md
-│   └── ARCHITECTURE.md
+│   ├── ARCHITECTURE.md
+│   └── ETC.md
 └── TASKS.md
 ```
 
