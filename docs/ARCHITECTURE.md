@@ -14,6 +14,6 @@ Each bounded context or module is free to choose the architecture of choice e.g.
 ## Project Structure
 - The `src` folder contains all the code related to the project
 - The `src/contexts` houses all modules or bounded contexts
-- The `src/shared` contains shared components or framework-level components that power an application e.g. API Server. Check @./FRAMEWORKS.md for detailed information
+- The `src/shared` contains shared components or framework-level components that power an application e.g. API Server. Check @./FRAMEWORKS.md for detailed information about shared components.
 
 For detailed information about the recommended structure of the modules. Check out @./PROJECT_STRUCTURE.md

@@ -2,10 +2,7 @@
 
 ## Specification
 ### Structure of the response
-| Field | Description |
-| --- | ----------- |
-| code | The business specific code which encompasses both normal response and error response |
-| Paragraph | Text |
+
 ### Base Response
 The base response for all API is
 

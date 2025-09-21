@@ -1,5 +1,5 @@
 # AGENTS Guideline for the repository
-This file provides a guidance for AI coding agent for this project
+This file provides a guidance for AI coding agent for this project.
 
 ## Project Awareness & Contextual Information
 - Always check the `docs/` folder
@@ -31,7 +31,10 @@ Since this is a modular monolith application, each bounded context inside `conte
 
 ## Styles & Conventions
 - Use **Typescript** only, do not mix Javascript in all cases!
-- 
+- For the file name. Use the following convention -> `<name>.<type>.ts`. Below is some of the examples you can follow
+  - For controller, it can be `welcome.controller.ts`
+  - For service, it could be `welcome.service.ts` or `user.service.ts`
+  - For repository, it could be more specific e.g. `user.repository.ts`
 
 ## Testing & Quality Control
 Be pragmatic on testing, 100% coverage is bullshit! Follow these guidelines:

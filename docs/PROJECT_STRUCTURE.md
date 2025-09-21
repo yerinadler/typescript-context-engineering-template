@@ -19,6 +19,10 @@ This is the preferred approach for contexts with **moderate to high complexity**
 - You expect long-term maintainability, team growth, or frequent changes in infrastructure.  
 - Example contexts: `inventory`, `order`, `payment`.  
 
+**Note on Non-CQRS Bounded Contexts**
+- For non-CQRS project, only use `DTO` to communicate with the use cases.
+- Do not create `commands` or `queries` separation as it will confuse people (I know it is the best practise to do that, but this is my style you know?)
+
 ---
 
 ### 3 Layer Architecture
