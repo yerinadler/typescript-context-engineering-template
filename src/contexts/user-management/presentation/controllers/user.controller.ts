@@ -34,12 +34,12 @@ export class UserController extends BaseController {
   async createUser(req: Request, res: Response): Promise<void> {
     try {
       const payload = req.body ?? {};
-      const dto: CreateUserDto = {
-        fullName: this.getRequiredString(payload.fullName, 'full name'),
-        email: this.getRequiredString(payload.email, 'email'),
-        gender: this.getRequiredString(payload.gender, 'gender'),
-        birthDate: this.getRequiredString(payload.birthDate, 'birth date'),
-      };
+      const dto = new CreateUserDto(
+        this.getRequiredString(payload.fullName, 'full name'),
+        this.getRequiredString(payload.email, 'email'),
+        this.getRequiredString(payload.gender, 'gender'),
+        this.getRequiredString(payload.birthDate, 'birth date'),
+      );
 
       const user = await this.dependencies.createUserUseCase.execute(dto);
       const response = createSuccessResponse('USER_CREATED', 'User created successfully', user);
@@ -75,19 +75,12 @@ export class UserController extends BaseController {
       const userId = this.getRequiredString(req.params?.id, 'user id');
       const payload = req.body ?? {};
 
-      const dto: UpdateUserProfileDto = {};
-
       const fullName = this.getOptionalString(payload.fullName, 'full name');
-      if (fullName) dto.fullName = fullName;
-
       const email = this.getOptionalString(payload.email, 'email');
-      if (email) dto.email = email;
-
       const gender = this.getOptionalString(payload.gender, 'gender');
-      if (gender) dto.gender = gender;
-
       const birthDate = this.getOptionalString(payload.birthDate, 'birth date');
-      if (birthDate) dto.birthDate = birthDate;
+
+      const dto = new UpdateUserProfileDto(fullName, email, gender, birthDate);
 
       const user = await this.dependencies.updateUserProfileUseCase.execute(userId, dto);
       const response = createSuccessResponse('USER_PROFILE_UPDATED', 'User profile updated successfully', user);
@@ -102,9 +95,7 @@ export class UserController extends BaseController {
       const userId = this.getRequiredString(req.params?.id, 'user id');
       const payload = req.body ?? {};
 
-      const dto: UpdateUserStatusDto = {
-        status: this.getRequiredString(payload.status, 'status'),
-      };
+      const dto = new UpdateUserStatusDto(this.getRequiredString(payload.status, 'status'));
 
       const user = await this.dependencies.updateUserStatusUseCase.execute(userId, dto);
       const response = createSuccessResponse('USER_STATUS_UPDATED', 'User status updated successfully', user);
