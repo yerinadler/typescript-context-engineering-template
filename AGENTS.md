@@ -25,6 +25,33 @@ For more details, check out the @/docs/ARCHITECTURE.md
 
 Since this is a modular monolith application, each bounded context inside `contexts` directory can uses different architectures. For more details, consult each context's `docs/ARCHITECTURE.md` with frontmatter definition for the architecture to implement e.g. Clean Architecture
 
+## Context-Specific Guidelines
+Please note that this project is a modular monolith application which means it is decomposed into independent modules.
+
+The `src/contexts/` contains modules or bounded contexts. Each of them contains specific set of guidelines
+
+```text
+├── AGENTS.md
+├── BOUNDED_CONTEXT.md
+├── docs
+│   ├── CONVENTIONS.md
+│   └── ARCHITECTURE.md
+└── TASKS.md
+```
+
+The special `BOUNDED_CONTEXT.md` file is mandatory to provide comprehensive context-specific information about the bounded context. It uses the following `Frontmatter` style for metadata
+
+```
+---
+boundedContext: clean
+architecture: Clean Architecture
+strategicClassification: core
+---
+```
+
+Check out the `examples/` directory for an example.
+
+
 ## Code Structure & Modularity
 - Never create a file longer than 500 lines of code. If the limit is approached, try to split the file into separate modules
 - Follow the conventions defined in the `eslint.config.mjs` and `prettier.config.cjs` strictly.
@@ -53,7 +80,7 @@ Be pragmatic on testing, 100% coverage is bullshit! Follow these guidelines:
 ## Documentation
 - Update the `README.md` file accordingly when new features are added to the project.
 - If there is an architectural change, add it to the `docs/ARCHITECTURE.md` file.
-- If there is a framework-level change (in the `shared` folder), add it to the `docs/FRAMEWORKS.md` file.
+- If there is a framework-level change (in the `src/shared/` folder), add it to the `docs/FRAMEWORKS.md` file.
 
 ## Safety and Permissions
 

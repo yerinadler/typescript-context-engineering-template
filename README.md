@@ -2,6 +2,9 @@
 
 This repository is a starter kit for building context-engineered modular monoliths with TypeScript. It illustrates how to apply bounded contexts, Clean Architecture, and shared frameworks without shipping business-specific logic. The template is designed to pair well with GPT-5 Codex driven workflows.
 
+> [!IMPORTANT]
+> Use Claude Code? Good luck with that!
+
 ## Highlights
 - Modular monolith foundation with explicit bounded contexts and shared framework layer.
 - Context engineering guidelines that keep cross-context interactions behind application-level interfaces.

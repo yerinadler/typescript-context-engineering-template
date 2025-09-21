@@ -2,18 +2,24 @@
 This document describes the tech stack and custom frameworks used to power this project.
 
 ## Tech Stack
-This section explains the foundational tech stack used in this project
+This project utilises the following tools, frameworks, and libraries to build a foundational framework of the application
 
 - **Express** - Web / API Framework that powers an entire application
 - **Postgres** - The primary database
 - **Prisma** - The primary ORM for data modeling and migrations
-- **Redis** - Simply for caching
-- **Kafka** - Event broker for event-driven architecture
 
-## Web Server
-The `src/shared/server` contains the base web server which in turns register `API Controllers` that exposes services or use cases through HTTP API
+## Foundational Framework
+The foundational framework is the fundamental building blocks that enable this modular monolith application. All the components of the foundational framework is located in the `src/shared/` directory.
 
-### Graceful Shutdown
+### The Base Application
+The base application is the main building block that orchestrates application startup, dependency wiring across different bounded contexts (modules).
+
+This component lives inside the `src/shared/app` directory.
+
+### Web Server
+The `src/shared/server` contains the base web server which in turns register `API Controllers` that exposes services or use cases through HTTP API. It is implemented on top of the well-known web framework `Express.js`
+
+#### Graceful Shutdown
 The Server class implements graceful shutdown functionality to ensure consistent application state during termination:
 
 - **Signal Handling**: Listens for SIGINT and SIGTERM process signals
@@ -24,8 +30,8 @@ The Server class implements graceful shutdown functionality to ensure consistent
 
 The graceful shutdown ensures that the server can be safely terminated without leaving requests in an inconsistent state.
 
-## Controller
+### Controller
 The `src/shared/controller` contains a router interface in `controller.interface.ts` file and the abstract base controller in `base.ts` file
 
-## API Utilities
+### API Utilities
 The `src/shared/api` folder centralises API response helpers. Use `createSuccessResponse` and `createErrorResponse` to ensure responses follow the documented `BaseResponse` and `BaseErrorResponse` shapes.
