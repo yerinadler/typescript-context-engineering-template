@@ -43,6 +43,14 @@ export class TodoController {
   async getTodoById(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
+      if (!id || !id.trim()) {
+        res.status(400).json({
+          success: false,
+          message: 'ID parameter is required',
+        });
+        return;
+      }
+
       const todo = await this.todoService.getTodoById(id);
 
       if (!todo) {
@@ -68,6 +76,14 @@ export class TodoController {
   async updateTodo(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
+      if (!id || !id.trim()) {
+        res.status(400).json({
+          success: false,
+          message: 'ID parameter is required',
+        });
+        return;
+      }
+
       const updates: UpdateTodoDTO = req.body;
 
       const todo = await this.todoService.updateTodo(id, updates);
@@ -96,6 +112,14 @@ export class TodoController {
   async deleteTodo(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
+      if (!id || !id.trim()) {
+        res.status(400).json({
+          success: false,
+          message: 'ID parameter is required',
+        });
+        return;
+      }
+
       const deleted = await this.todoService.deleteTodo(id);
 
       if (!deleted) {

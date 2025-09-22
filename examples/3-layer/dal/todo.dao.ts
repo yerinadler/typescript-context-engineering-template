@@ -35,13 +35,16 @@ export class TodoDAO {
     const todoIndex = this.todos.findIndex((t) => t.id === id);
     if (todoIndex === -1) return null;
 
+    const currentTodo = this.todos[todoIndex];
+    if (!currentTodo) return null;
+
     this.todos[todoIndex] = {
-      ...this.todos[todoIndex],
+      ...currentTodo,
       ...updates,
       updatedAt: new Date(),
     };
 
-    return this.todos[todoIndex];
+    return this.todos[todoIndex] || null;
   }
 
   async delete(id: string): Promise<boolean> {

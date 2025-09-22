@@ -1,4 +1,4 @@
-import * as express from 'express';
+const express = require('express');
 import { TodoController } from './controllers/todo.controller';
 import { TodoDAO } from './dal/todo.dao';
 import { TodoService } from './services/todo.service';

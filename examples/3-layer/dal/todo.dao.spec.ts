@@ -62,7 +62,7 @@ describe('TodoDAO', () => {
     });
 
     // Small delay to ensure different timestamps
-    await new Promise((resolve) => setTimeout(resolve, 1));
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
     const updated = await dao.update(created.id, {
       title: 'Updated Title',
