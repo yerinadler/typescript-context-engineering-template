@@ -35,3 +35,23 @@ This applies to every bounded context/module in the modular monolith and to all 
 > 🚫 **Do not use Git Flow.**  
 > 🚫 **Do not maintain `develop`, `release/*`, or `hotfix/*` branches.**  
 > ✅ **Always integrate early, always integrate often.**
+
+## Branch Naming Convention
+
+All new branches must follow this pattern:
+
+### With ticket ID e.g. JIRA or Github project tasks
+- `feature/<ticket-id>-<short-description>`
+- `hotfix/<ticket-id>-<short-description>`
+
+#### Examples
+- `feature/123-add-login-endpoint`
+- `hotfix/789-update-ssl-config`
+
+### Without a ticket ID
+- `feature/<short-description>`
+- `hotfix/<short-description>`
+
+#### Examples
+- `feature/add-login-endpoint`
+- `hotfix/update-ssl-config`
