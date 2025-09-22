@@ -1,5 +1,5 @@
 ---
-boundedContext: clean
+boundedContext: 3 Layer
 architecture: 3 Layer Architecture
 strategicClassification: core
 ---
