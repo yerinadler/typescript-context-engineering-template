@@ -5,6 +5,7 @@
 - [x] Establish shared ApplicationError framework and HTTP-aware middleware.
 - [x] Create user-management bounded context with Clean Architecture.
 - [x] Implement graceful shutdown functionality for Express server.
+- [x] Refactor controllers to rely on centralized error handling middleware with express-async-handler.
 
 ## Discovered During Work
 

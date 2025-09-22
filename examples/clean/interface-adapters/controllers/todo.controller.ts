@@ -1,7 +1,8 @@
 import type { Request, Response } from 'express';
-import { createErrorResponse, createSuccessResponse } from '../../../../src/shared/api';
-import { BaseController } from '../../../../src/shared/controller/base';
-import { ApplicationError, BadRequestError, errorCodes, resolveHttpStatus } from '../../../../src/shared/errors';
+import { Router as ExpressRouter } from 'express';
+import expressAsyncHandler from 'express-async-handler';
+import { createSuccessResponse } from '../../../../src/shared/api';
+import { BadRequestError } from '../../../../src/shared/errors';
 import { CreateTodoDTO } from '../../application/todo.dto';
 import { CreateTodoUseCase } from '../../application/todo.usecase';
 
@@ -9,44 +10,34 @@ type TodoControllerDependencies = {
   createTodoUseCase: CreateTodoUseCase;
 };
 
-export class TodoController extends BaseController {
+export class TodoController {
+  public readonly basePath: string = '/examples/clean/todo';
+  private readonly _router: ExpressRouter;
+
   constructor(private readonly dependencies: TodoControllerDependencies) {
-    super('/examples/clean/todo');
+    this._router = ExpressRouter();
     this.initializeRoutes();
   }
 
-  protected initializeRoutes(): void {
-    this.addRoute('post', '/', this.createTodo);
+  get router(): ExpressRouter {
+    return this._router;
   }
 
-  private async createTodo(req: Request, res: Response) {
-    try {
-      const payload = req.body ?? {};
-
-      const dto = new CreateTodoDTO(
-        this.getRequiredString(payload.title, 'title'),
-        this.getRequiredString(payload.description, 'description'),
-      );
-
-      await this.dependencies.createTodoUseCase.execute(dto);
-
-      res.status(201).json(createSuccessResponse('TODO_CREATED', 'todo created'));
-    } catch (error) {
-      this.handleError(error, res);
-    }
+  private initializeRoutes(): void {
+    this._router.post('/', expressAsyncHandler(this.createTodo.bind(this)));
   }
 
-  private handleError(error: unknown, res: Response): void {
-    if (error instanceof ApplicationError) {
-      const httpStatus = resolveHttpStatus(error.errorCode);
-      res.status(httpStatus).json(createErrorResponse(error.errorCode, error.message));
-      return;
-    }
+  private async createTodo(req: Request, res: Response): Promise<void> {
+    const payload = req.body ?? {};
 
-    const message = error instanceof Error ? error.message : 'unexpected error';
-    res
-      .status(resolveHttpStatus(errorCodes.INTERNAL_ERROR))
-      .json(createErrorResponse(errorCodes.INTERNAL_ERROR, message));
+    const dto = new CreateTodoDTO(
+      this.getRequiredString(payload.title, 'title'),
+      this.getRequiredString(payload.description, 'description'),
+    );
+
+    await this.dependencies.createTodoUseCase.execute(dto);
+
+    res.status(201).json(createSuccessResponse('TODO_CREATED', 'todo created'));
   }
 
   private getRequiredString(value: unknown, fieldName: string): string {

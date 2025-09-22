@@ -1,5 +1,6 @@
 import { Server as HttpServer } from 'http';
-import express, { Application, urlencoded, json } from 'express';
+import express, { Application, json, urlencoded } from 'express';
+import { errorHandler } from '../api/error-handler';
 import { Controller } from '../controller/controller.interface';
 
 export class Server {
@@ -22,6 +23,7 @@ export class Server {
   }
 
   public run(port: number): void {
+    this._app.use(errorHandler);
     this._server = this._app.listen(port, () => {
       // eslint-disable-next-line no-console
       console.log('the application is listening to the port %s', port);

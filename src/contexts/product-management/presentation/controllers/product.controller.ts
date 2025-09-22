@@ -1,7 +1,8 @@
 import type { Request, Response } from 'express';
-import { createErrorResponse, createSuccessResponse } from '../../../../shared/api';
-import { BaseController } from '../../../../shared/controller/base';
-import { ApplicationError, BadRequestError, errorCodes, resolveHttpStatus } from '../../../../shared/errors';
+import { Router as ExpressRouter } from 'express';
+import expressAsyncHandler from 'express-async-handler';
+import { createSuccessResponse } from '../../../../shared/api';
+import { BadRequestError } from '../../../../shared/errors';
 import { CreateProductDTO } from '../../application/dto/create-product.dto';
 import { UpdateProductPriceDTO } from '../../application/dto/update-product-price.dto';
 import { CreateProductUseCase } from '../../application/use-cases/create-product.use-case';
@@ -16,88 +17,66 @@ type ProductControllerDependencies = {
   updateProductPriceUseCase: UpdateProductPriceUseCase;
 };
 
-export class ProductController extends BaseController {
+export class ProductController {
+  public readonly basePath: string = '/products';
+  private readonly _router: ExpressRouter;
+
   constructor(private readonly dependencies: ProductControllerDependencies) {
-    super('/products');
+    this._router = ExpressRouter();
     this.initializeRoutes();
   }
 
-  protected initializeRoutes(): void {
-    this.addRoute('get', '/', this.listProducts);
-    this.addRoute('get', '/:id', this.getProduct);
-    this.addRoute('post', '/', this.createProduct);
-    this.addRoute('put', '/:id/price', this.updatePrice);
+  get router(): ExpressRouter {
+    return this._router;
   }
 
-  private async listProducts(_req: Request, res: Response) {
-    try {
-      const products = await this.dependencies.listProductsUseCase.execute();
-      res.json(createSuccessResponse('PRODUCTS_FETCHED', 'products retrieved', products));
-    } catch (error) {
-      this.handleError(error, res);
-    }
+  private initializeRoutes(): void {
+    this._router.get('/', expressAsyncHandler(this.listProducts.bind(this)));
+    this._router.get('/:id', expressAsyncHandler(this.getProduct.bind(this)));
+    this._router.post('/', expressAsyncHandler(this.createProduct.bind(this)));
+    this._router.put('/:id/price', expressAsyncHandler(this.updatePrice.bind(this)));
   }
 
-  private async getProduct(req: Request, res: Response) {
-    try {
-      const productId = this.getRequiredString(req.params?.id, 'product id');
-      const product = await this.dependencies.getProductByIdUseCase.execute(productId);
-      res.json(createSuccessResponse('PRODUCT_FETCHED', 'product retrieved', product));
-    } catch (error) {
-      this.handleError(error, res);
-    }
+  private async listProducts(_req: Request, res: Response): Promise<void> {
+    const products = await this.dependencies.listProductsUseCase.execute();
+    res.json(createSuccessResponse('PRODUCTS_FETCHED', 'products retrieved', products));
   }
 
-  private async createProduct(req: Request, res: Response) {
-    try {
-      const payload = req.body ?? {};
-      const priceCents = typeof payload.priceCents === 'number' ? payload.priceCents : Number(payload.priceCents);
-      const description = this.getOptionalString(payload.description, 'description');
-      const dto = new CreateProductDTO(
-        this.getRequiredString(payload.name, 'name'),
-        this.getRequiredString(payload.sku, 'sku'),
-        priceCents,
-        this.getRequiredString(payload.currency, 'currency'),
-        description,
-      );
-
-      const product = await this.dependencies.createProductUseCase.execute(dto);
-
-      res.status(201).json(createSuccessResponse('PRODUCT_CREATED', 'product created', product));
-    } catch (error) {
-      this.handleError(error, res);
-    }
+  private async getProduct(req: Request, res: Response): Promise<void> {
+    const productId = this.getRequiredString(req.params?.id, 'product id');
+    const product = await this.dependencies.getProductByIdUseCase.execute(productId);
+    res.json(createSuccessResponse('PRODUCT_FETCHED', 'product retrieved', product));
   }
 
-  private async updatePrice(req: Request, res: Response) {
-    try {
-      const payload = req.body ?? {};
-      const priceCents = typeof payload.priceCents === 'number' ? payload.priceCents : Number(payload.priceCents);
-      const dto = new UpdateProductPriceDTO(
-        this.getRequiredString(req.params?.id, 'product id'),
-        priceCents,
-        this.getRequiredString(payload.currency, 'currency'),
-      );
+  private async createProduct(req: Request, res: Response): Promise<void> {
+    const payload = req.body ?? {};
+    const priceCents = typeof payload.priceCents === 'number' ? payload.priceCents : Number(payload.priceCents);
+    const description = this.getOptionalString(payload.description, 'description');
+    const dto = new CreateProductDTO(
+      this.getRequiredString(payload.name, 'name'),
+      this.getRequiredString(payload.sku, 'sku'),
+      priceCents,
+      this.getRequiredString(payload.currency, 'currency'),
+      description,
+    );
 
-      const product = await this.dependencies.updateProductPriceUseCase.execute(dto);
+    const product = await this.dependencies.createProductUseCase.execute(dto);
 
-      res.json(createSuccessResponse('PRODUCT_PRICE_UPDATED', 'product price updated', product));
-    } catch (error) {
-      this.handleError(error, res);
-    }
+    res.status(201).json(createSuccessResponse('PRODUCT_CREATED', 'product created', product));
   }
 
-  private handleError(error: unknown, res: Response): void {
-    if (error instanceof ApplicationError) {
-      const httpStatus = resolveHttpStatus(error.errorCode);
-      res.status(httpStatus).json(createErrorResponse(error.errorCode, error.message));
-      return;
-    }
+  private async updatePrice(req: Request, res: Response): Promise<void> {
+    const payload = req.body ?? {};
+    const priceCents = typeof payload.priceCents === 'number' ? payload.priceCents : Number(payload.priceCents);
+    const dto = new UpdateProductPriceDTO(
+      this.getRequiredString(req.params?.id, 'product id'),
+      priceCents,
+      this.getRequiredString(payload.currency, 'currency'),
+    );
 
-    const message = error instanceof Error ? error.message : 'unexpected error';
-    res
-      .status(resolveHttpStatus(errorCodes.INTERNAL_ERROR))
-      .json(createErrorResponse(errorCodes.INTERNAL_ERROR, message));
+    const product = await this.dependencies.updateProductPriceUseCase.execute(dto);
+
+    res.json(createSuccessResponse('PRODUCT_PRICE_UPDATED', 'product price updated', product));
   }
 
   private getRequiredString(value: unknown, fieldName: string): string {

@@ -1,7 +1,8 @@
-import { Request, Response } from 'express';
-import { createErrorResponse, createSuccessResponse } from '../../../../shared/api/base-response';
-import { BaseController } from '../../../../shared/controller/base';
-import { ApplicationError, BadRequestError, errorCodes, resolveHttpStatus } from '../../../../shared/errors';
+import type { Request, Response } from 'express';
+import { Router as ExpressRouter } from 'express';
+import expressAsyncHandler from 'express-async-handler';
+import { createSuccessResponse } from '../../../../shared/api/base-response';
+import { BadRequestError } from '../../../../shared/errors';
 import { CreateUserDto, UpdateUserProfileDto, UpdateUserStatusDto } from '../../application/dto/user.dto';
 import { CreateUserUseCase } from '../../application/use-cases/create-user.use-case';
 import { GetUserByIdUseCase } from '../../application/use-cases/get-user-by-id.use-case';
@@ -17,105 +18,79 @@ type UserControllerDependencies = {
   updateUserStatusUseCase: UpdateUserStatusUseCase;
 };
 
-export class UserController extends BaseController {
+export class UserController {
+  public readonly basePath: string = '/users';
+  private readonly _router: ExpressRouter;
+
   constructor(private readonly dependencies: UserControllerDependencies) {
-    super('/users');
+    this._router = ExpressRouter();
     this.initializeRoutes();
   }
 
-  protected initializeRoutes(): void {
-    this.addRoute('post', '/', this.createUser);
-    this.addRoute('get', '/', this.listUsers);
-    this.addRoute('get', '/:id', this.getUserById);
-    this.addRoute('put', '/:id/profile', this.updateUserProfile);
-    this.addRoute('put', '/:id/status', this.updateUserStatus);
+  get router(): ExpressRouter {
+    return this._router;
   }
 
-  async createUser(req: Request, res: Response): Promise<void> {
-    try {
-      const payload = req.body ?? {};
-      const dto = new CreateUserDto(
-        this.getRequiredString(payload.fullName, 'full name'),
-        this.getRequiredString(payload.email, 'email'),
-        this.getRequiredString(payload.gender, 'gender'),
-        this.getRequiredString(payload.birthDate, 'birth date'),
-      );
-
-      const user = await this.dependencies.createUserUseCase.execute(dto);
-      const response = createSuccessResponse('USER_CREATED', 'User created successfully', user);
-      res.status(201).json(response);
-    } catch (error) {
-      this.handleError(error, res);
-    }
+  private initializeRoutes(): void {
+    this._router.post('/', expressAsyncHandler(this.createUser.bind(this)));
+    this._router.get('/', expressAsyncHandler(this.listUsers.bind(this)));
+    this._router.get('/:id', expressAsyncHandler(this.getUserById.bind(this)));
+    this._router.put('/:id/profile', expressAsyncHandler(this.updateUserProfile.bind(this)));
+    this._router.put('/:id/status', expressAsyncHandler(this.updateUserStatus.bind(this)));
   }
 
-  async listUsers(req: Request, res: Response): Promise<void> {
-    try {
-      const users = await this.dependencies.listUsersUseCase.execute();
-      const response = createSuccessResponse('USERS_RETRIEVED', 'Users retrieved successfully', users);
-      res.status(200).json(response);
-    } catch (error) {
-      this.handleError(error, res);
-    }
+  private async createUser(req: Request, res: Response): Promise<void> {
+    const payload = req.body ?? {};
+    const dto = new CreateUserDto(
+      this.getRequiredString(payload.fullName, 'full name'),
+      this.getRequiredString(payload.email, 'email'),
+      this.getRequiredString(payload.gender, 'gender'),
+      this.getRequiredString(payload.birthDate, 'birth date'),
+    );
+
+    const user = await this.dependencies.createUserUseCase.execute(dto);
+    const response = createSuccessResponse('USER_CREATED', 'User created successfully', user);
+    res.status(201).json(response);
   }
 
-  async getUserById(req: Request, res: Response): Promise<void> {
-    try {
-      const userId = this.getRequiredString(req.params?.id, 'user id');
-      const user = await this.dependencies.getUserByIdUseCase.execute(userId);
-      const response = createSuccessResponse('USER_RETRIEVED', 'User retrieved successfully', user);
-      res.status(200).json(response);
-    } catch (error) {
-      this.handleError(error, res);
-    }
+  private async listUsers(_req: Request, res: Response): Promise<void> {
+    const users = await this.dependencies.listUsersUseCase.execute();
+    const response = createSuccessResponse('USERS_RETRIEVED', 'Users retrieved successfully', users);
+    res.status(200).json(response);
   }
 
-  async updateUserProfile(req: Request, res: Response): Promise<void> {
-    try {
-      const userId = this.getRequiredString(req.params?.id, 'user id');
-      const payload = req.body ?? {};
-
-      const fullName = this.getOptionalString(payload.fullName, 'full name');
-      const email = this.getOptionalString(payload.email, 'email');
-      const gender = this.getOptionalString(payload.gender, 'gender');
-      const birthDate = this.getOptionalString(payload.birthDate, 'birth date');
-
-      const dto = new UpdateUserProfileDto(fullName, email, gender, birthDate);
-
-      const user = await this.dependencies.updateUserProfileUseCase.execute(userId, dto);
-      const response = createSuccessResponse('USER_PROFILE_UPDATED', 'User profile updated successfully', user);
-      res.status(200).json(response);
-    } catch (error) {
-      this.handleError(error, res);
-    }
+  private async getUserById(req: Request, res: Response): Promise<void> {
+    const userId = this.getRequiredString(req.params?.id, 'user id');
+    const user = await this.dependencies.getUserByIdUseCase.execute(userId);
+    const response = createSuccessResponse('USER_RETRIEVED', 'User retrieved successfully', user);
+    res.status(200).json(response);
   }
 
-  async updateUserStatus(req: Request, res: Response): Promise<void> {
-    try {
-      const userId = this.getRequiredString(req.params?.id, 'user id');
-      const payload = req.body ?? {};
+  private async updateUserProfile(req: Request, res: Response): Promise<void> {
+    const userId = this.getRequiredString(req.params?.id, 'user id');
+    const payload = req.body ?? {};
 
-      const dto = new UpdateUserStatusDto(this.getRequiredString(payload.status, 'status'));
+    const fullName = this.getOptionalString(payload.fullName, 'full name');
+    const email = this.getOptionalString(payload.email, 'email');
+    const gender = this.getOptionalString(payload.gender, 'gender');
+    const birthDate = this.getOptionalString(payload.birthDate, 'birth date');
 
-      const user = await this.dependencies.updateUserStatusUseCase.execute(userId, dto);
-      const response = createSuccessResponse('USER_STATUS_UPDATED', 'User status updated successfully', user);
-      res.status(200).json(response);
-    } catch (error) {
-      this.handleError(error, res);
-    }
+    const dto = new UpdateUserProfileDto(fullName, email, gender, birthDate);
+
+    const user = await this.dependencies.updateUserProfileUseCase.execute(userId, dto);
+    const response = createSuccessResponse('USER_PROFILE_UPDATED', 'User profile updated successfully', user);
+    res.status(200).json(response);
   }
 
-  private handleError(error: unknown, res: Response): void {
-    if (error instanceof ApplicationError) {
-      const httpStatus = resolveHttpStatus(error.errorCode);
-      res.status(httpStatus).json(createErrorResponse(error.errorCode, error.message));
-      return;
-    }
+  private async updateUserStatus(req: Request, res: Response): Promise<void> {
+    const userId = this.getRequiredString(req.params?.id, 'user id');
+    const payload = req.body ?? {};
 
-    const message = error instanceof Error ? error.message : 'unexpected error';
-    res
-      .status(resolveHttpStatus(errorCodes.INTERNAL_ERROR))
-      .json(createErrorResponse(errorCodes.INTERNAL_ERROR, message));
+    const dto = new UpdateUserStatusDto(this.getRequiredString(payload.status, 'status'));
+
+    const user = await this.dependencies.updateUserStatusUseCase.execute(userId, dto);
+    const response = createSuccessResponse('USER_STATUS_UPDATED', 'User status updated successfully', user);
+    res.status(200).json(response);
   }
 
   private getRequiredString(value: unknown, fieldName: string): string {
