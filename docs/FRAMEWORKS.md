@@ -35,3 +35,12 @@ The `src/shared/controller` contains a router interface in `controller.interface
 
 ### API Utilities
 The `src/shared/api` folder centralises API response helpers. Use `createSuccessResponse` and `createErrorResponse` to ensure responses follow the documented `BaseResponse` and `BaseErrorResponse` shapes.
+
+### Logging
+The `src/shared/logging` directory contains the framework-wide logging abstraction. It provides a type-safe interface that hides the Winston implementation details while supporting:
+
+- **Structured JSON output** for consistent log ingestion.
+- **Environment-aware log levels**, defaulting to `debug` locally and `info` in production-like environments.
+- **Trace and span correlation** fields (`trace_id` and `span_id`) to integrate with future OpenTelemetry instrumentation.
+
+The module exports a singleton `frameworkLogger` instance, ensuring the Winston logger is only initialised once and reused across the application. Use `createLogger` to create child loggers with additional contextual metadata when needed.
