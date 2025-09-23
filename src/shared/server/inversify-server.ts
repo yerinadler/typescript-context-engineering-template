@@ -1,9 +1,9 @@
 import 'reflect-metadata';
-import { InversifyExpressServer } from 'inversify-express-utils';
 import { json, urlencoded } from 'express';
+import { InversifyExpressServer } from 'inversify-express-utils';
+import { errorHandler } from '../api/error-handler';
 import { ApplicationContainer } from '../di/container';
 import { ModuleDefinition } from '../di/module.interface';
-import { errorHandler } from '../api/error-handler';
 
 /**
  * InversifyJS-based server
@@ -44,7 +44,7 @@ export class InversifyServer {
 
     // Build and start the application
     const app = this._server.build();
-    
+
     app.listen(port, () => {
       // eslint-disable-next-line no-console
       console.log(`InversifyJS server listening on port ${port}`);
@@ -54,7 +54,7 @@ export class InversifyServer {
 
   private logRegisteredModules(): void {
     const modules = this._appContainer.getRegisteredModules();
-    
+
     if (modules.length === 0) {
       // eslint-disable-next-line no-console
       console.log('No modules registered.');
@@ -63,7 +63,7 @@ export class InversifyServer {
 
     // eslint-disable-next-line no-console
     console.log('\nRegistered Modules:');
-    modules.forEach(moduleName => {
+    modules.forEach((moduleName) => {
       // eslint-disable-next-line no-console
       console.log(`  - ${moduleName}`);
     });

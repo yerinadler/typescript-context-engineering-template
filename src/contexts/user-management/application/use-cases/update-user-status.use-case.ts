@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { inject, injectable } from 'inversify';
-import { NotFoundError, ValidationError } from '../../../../shared/errors/application-error';
 import { TYPES } from '../../../../shared/di';
+import { NotFoundError, ValidationError } from '../../../../shared/errors/application-error';
 import { DomainError } from '../../domain/errors/domain-error';
 import { UpdateUserStatusDto, toUserDto, UserDto } from '../dto/user.dto';
 import { UserRepository } from '../ports/user-repository.port';

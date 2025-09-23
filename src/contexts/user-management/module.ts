@@ -1,11 +1,11 @@
 import { Container } from 'inversify';
 import { ModuleDefinition, TYPES } from '../../shared/di';
+import { UserRepository } from './application/ports/user-repository.port';
 import { CreateUserUseCase } from './application/use-cases/create-user.use-case';
 import { GetUserByIdUseCase } from './application/use-cases/get-user-by-id.use-case';
 import { ListUsersUseCase } from './application/use-cases/list-users.use-case';
 import { UpdateUserProfileUseCase } from './application/use-cases/update-user-profile.use-case';
 import { UpdateUserStatusUseCase } from './application/use-cases/update-user-status.use-case';
-import { UserRepository } from './application/ports/user-repository.port';
 import { InMemoryUserRepository } from './infrastructure/repositories/in-memory-user.repository';
 import { UserController } from './presentation/controllers/user.controller.inversify';
 

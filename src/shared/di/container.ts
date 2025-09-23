@@ -8,18 +8,18 @@ import { ModuleDefinition } from './module.interface';
 export class ApplicationContainer {
   private readonly _container: Container;
   private readonly _moduleContainers: Map<string, Container> = new Map();
-  
+
   constructor() {
     this._container = new Container({ defaultScope: 'Singleton' });
   }
-  
+
   /**
    * Get the main application container
    */
   get container(): Container {
     return this._container;
   }
-  
+
   /**
    * Register a module with its own child container
    * @param module - Module definition to register
@@ -27,20 +27,20 @@ export class ApplicationContainer {
   async registerModule(module: ModuleDefinition): Promise<void> {
     // Create child container for this module
     const moduleContainer = this._container.createChild();
-    
+
     // Configure the module's container
     await module.configure(moduleContainer);
-    
+
     // Store the module container
     this._moduleContainers.set(module.name, moduleContainer);
-    
+
     // If module has imports, resolve them first
     if (module.imports) {
       for (const importedModule of module.imports) {
         await this.registerModule(importedModule);
       }
     }
-    
+
     // If module exports services, bind them to the main container
     if (module.exports) {
       for (const exportedSymbol of module.exports) {
@@ -52,7 +52,7 @@ export class ApplicationContainer {
       }
     }
   }
-  
+
   /**
    * Get a module's container by name
    * @param moduleName - Name of the module
@@ -61,7 +61,7 @@ export class ApplicationContainer {
   getModuleContainer(moduleName: string): Container | undefined {
     return this._moduleContainers.get(moduleName);
   }
-  
+
   /**
    * Get all registered module names
    */

@@ -1,10 +1,23 @@
-import { createProductManagementController } from './contexts/product-management';
-import { createUserManagementController } from './contexts/user-management';
-import { WelcomeController } from './contexts/welcome/controllers/welcome.controller';
-import { Server } from './shared/server';
+import 'reflect-metadata';
+import { ProductManagementModule } from './contexts/product-management/module';
+import { UserManagementModule } from './contexts/user-management/module';
+import { WelcomeModule } from './contexts/welcome/module';
+import { InversifyServer } from './shared/server/inversify-server';
 
-const server = new Server();
-server.registerController(new WelcomeController());
-server.registerController(createProductManagementController());
-server.registerController(createUserManagementController());
-server.run(3000);
+async function bootstrap() {
+  const server = new InversifyServer();
+
+  // Register modules
+  await server.registerModule(new WelcomeModule());
+  await server.registerModule(new UserManagementModule());
+  await server.registerModule(new ProductManagementModule());
+
+  // Start server
+  await server.start(3000);
+}
+
+bootstrap().catch((error) => {
+  // eslint-disable-next-line no-console
+  console.error('Failed to start server:', error);
+  process.exit(1);
+});

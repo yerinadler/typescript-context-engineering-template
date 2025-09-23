@@ -1,4 +1,7 @@
+import 'reflect-metadata';
 import { randomUUID } from 'crypto';
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../../shared/di';
 import { ConflictError, ValidationError } from '../../../../shared/errors';
 import { Product } from '../../domain/entities/product';
 import { DomainError } from '../../domain/errors/domain-error';
@@ -10,8 +13,9 @@ import { CreateProductDTO } from '../dto/create-product.dto';
 import { ProductDto, toProductDto } from '../dto/product.dto';
 import { ProductRepository } from '../ports/product-repository';
 
+@injectable()
 export class CreateProductUseCase extends BaseUseCase<CreateProductDTO, ProductDto> {
-  constructor(private readonly productRepository: ProductRepository) {
+  constructor(@inject(TYPES.ProductRepository) private readonly productRepository: ProductRepository) {
     super();
   }
 

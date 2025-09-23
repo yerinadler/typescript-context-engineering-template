@@ -1,3 +1,3 @@
 export * from './types';
-export * from './module.interface'; 
+export * from './module.interface';
 export * from './container';

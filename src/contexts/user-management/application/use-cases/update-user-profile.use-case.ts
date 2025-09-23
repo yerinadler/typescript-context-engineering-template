@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { inject, injectable } from 'inversify';
-import { NotFoundError, ConflictError, ValidationError } from '../../../../shared/errors/application-error';
 import { TYPES } from '../../../../shared/di';
+import { NotFoundError, ConflictError, ValidationError } from '../../../../shared/errors/application-error';
 import { DomainError } from '../../domain/errors/domain-error';
 import { BirthDate } from '../../domain/value-objects/birth-date';
 import { Email } from '../../domain/value-objects/email';

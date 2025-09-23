@@ -1,8 +1,8 @@
 import 'reflect-metadata';
-import { inject, injectable } from 'inversify';
 import { randomUUID } from 'crypto';
-import { ConflictError, ValidationError } from '../../../../shared/errors/application-error';
+import { inject, injectable } from 'inversify';
 import { TYPES } from '../../../../shared/di';
+import { ConflictError, ValidationError } from '../../../../shared/errors/application-error';
 import { User } from '../../domain/entities/user';
 import { DomainError } from '../../domain/errors/domain-error';
 import { BirthDate } from '../../domain/value-objects/birth-date';

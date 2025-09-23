@@ -1,10 +1,10 @@
 import 'reflect-metadata';
-import { inject } from 'inversify';
-import { controller, httpDelete, httpGet, httpPost, httpPut, request, response } from 'inversify-express-utils';
 import type { Request, Response } from 'express';
+import { inject } from 'inversify';
+import { controller, httpGet, httpPost, httpPut, request, response } from 'inversify-express-utils';
 import { createSuccessResponse } from '../../../../shared/api';
-import { BadRequestError } from '../../../../shared/errors';
 import { TYPES } from '../../../../shared/di';
+import { BadRequestError } from '../../../../shared/errors';
 import { CreateUserDto, UpdateUserProfileDto, UpdateUserStatusDto } from '../../application/dto/user.dto';
 import { CreateUserUseCase } from '../../application/use-cases/create-user.use-case';
 import { GetUserByIdUseCase } from '../../application/use-cases/get-user-by-id.use-case';

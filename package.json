@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --runInBand",
-    "dev": "pnpm ts-node src/index.ts",
+    "dev": "npx ts-node src/index.ts",
     "lint": "eslint . --ext .ts",
-    "lint:fix": "pnpm lint --fix",
+    "lint:fix": "npm run lint --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "build": "rm -rf dist && npx tsc",

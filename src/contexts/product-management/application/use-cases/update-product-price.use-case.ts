@@ -1,3 +1,6 @@
+import 'reflect-metadata';
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../../shared/di';
 import { NotFoundError, ValidationError } from '../../../../shared/errors';
 import { DomainError } from '../../domain/errors/domain-error';
 import { Money } from '../../domain/value-objects/money';
@@ -6,8 +9,9 @@ import { ProductDto, toProductDto } from '../dto/product.dto';
 import { UpdateProductPriceDTO } from '../dto/update-product-price.dto';
 import { ProductRepository } from '../ports/product-repository';
 
+@injectable()
 export class UpdateProductPriceUseCase extends BaseUseCase<UpdateProductPriceDTO, ProductDto> {
-  constructor(private readonly productRepository: ProductRepository) {
+  constructor(@inject(TYPES.ProductRepository) private readonly productRepository: ProductRepository) {
     super();
   }
 
