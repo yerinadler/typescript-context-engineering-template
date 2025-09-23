@@ -55,7 +55,6 @@ export class Server {
       // eslint-disable-next-line no-console
       console.log('No server instance found. Exiting immediately.');
       process.exit(0);
-      return;
     }
 
     // Set timeout for forced shutdown (15 seconds)
@@ -165,7 +164,9 @@ export class Server {
 
     const horizontalBorder = `+${'-'.repeat(methodWidth + 2)}+${'-'.repeat(pathWidth + 2)}+`;
     const headerRow = `| ${methodHeader.padEnd(methodWidth)} | ${pathHeader.padEnd(pathWidth)} |`;
-    const routeRows = routes.map((route) => `| ${route.method.padEnd(methodWidth)} | ${route.path.padEnd(pathWidth)} |`);
+    const routeRows = routes.map(
+      (route) => `| ${route.method.padEnd(methodWidth)} | ${route.path.padEnd(pathWidth)} |`,
+    );
 
     return [horizontalBorder, headerRow, horizontalBorder, ...routeRows, horizontalBorder].join('\n');
   }
