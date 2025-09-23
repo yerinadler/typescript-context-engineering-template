@@ -1,12 +1,12 @@
 export type LogLevel = 'error' | 'warn' | 'info' | 'debug';
 
 export interface LogContext {
-  traceId?: string;
-  spanId?: string;
+  traceId?: string | undefined;
+  spanId?: string | undefined;
   /**
    * Additional structured attributes to enrich the log entry.
    */
-  attributes?: Record<string, unknown>;
+  attributes?: Record<string, unknown> | undefined;
   /**
    * Optional error instance or serialisable error information to include in the log entry.
    */

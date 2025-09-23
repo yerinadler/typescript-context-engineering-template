@@ -111,7 +111,7 @@ const mergeContexts = (base?: LogContext, override?: LogContext): LogContext | u
 };
 
 class WinstonLogger implements Logger {
-  private readonly defaultContext?: LogContext;
+  private readonly defaultContext: LogContext | undefined;
 
   constructor(
     private readonly logger: winston.Logger,
@@ -147,7 +147,7 @@ class WinstonLogger implements Logger {
 
   child(defaultContext: LogContext): Logger {
     const mergedContext = mergeContexts(this.defaultContext, defaultContext);
-    return new WinstonLogger(this.logger, { defaultContext: mergedContext });
+    return new WinstonLogger(this.logger, mergedContext ? { defaultContext: mergedContext } : {});
   }
 }
 

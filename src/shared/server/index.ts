@@ -1,5 +1,6 @@
 import { Server as HttpServer } from 'http';
 import express, { Application, json, urlencoded } from 'express';
+import type { Router as ExpressRouter } from 'express';
 import { errorHandler } from '../api/error-handler';
 import { Controller } from '../controller/controller.interface';
 
@@ -7,6 +8,7 @@ export class Server {
   private _app: Application;
   private _server: HttpServer | null = null;
   private _isShuttingDown = false;
+  private readonly controllers: Controller[] = [];
 
   constructor() {
     this._app = express();
@@ -19,6 +21,7 @@ export class Server {
   }
 
   public registerController(controller: Controller) {
+    this.controllers.push(controller);
     this._app.use(controller.basePath, controller.router);
   }
 
@@ -26,7 +29,8 @@ export class Server {
     this._app.use(errorHandler);
     this._server = this._app.listen(port, () => {
       // eslint-disable-next-line no-console
-      console.log('the application is listening to the port %s', port);
+      console.log('Application is listening on port %s', port);
+      this.logRegisteredRoutes();
     });
 
     this.setupGracefulShutdown();
@@ -76,4 +80,120 @@ export class Server {
       }
     });
   }
+
+  private logRegisteredRoutes(): void {
+    const routes = this.collectRegisteredRoutes();
+
+    if (routes.length === 0) {
+      // eslint-disable-next-line no-console
+      console.log('No HTTP routes registered.');
+      return;
+    }
+
+    const table = this.buildRoutesTable(routes);
+
+    // eslint-disable-next-line no-console
+    console.log('\nRegistered HTTP Routes');
+    // eslint-disable-next-line no-console
+    console.log(table);
+  }
+
+  private collectRegisteredRoutes(): RouteDefinition[] {
+    const routes: RouteDefinition[] = [];
+
+    for (const controller of this.controllers) {
+      const router = controller.router as ExpressRouterWithStack;
+      const routerRoutes = this.extractRoutesFromRouter(router, controller.basePath);
+      routes.push(...routerRoutes);
+    }
+
+    return routes.sort((a, b) => {
+      if (a.path === b.path) {
+        return this.getMethodRank(a.method) - this.getMethodRank(b.method);
+      }
+
+      return a.path.localeCompare(b.path);
+    });
+  }
+
+  private extractRoutesFromRouter(router: ExpressRouterWithStack, basePath: string): RouteDefinition[] {
+    if (!Array.isArray(router.stack)) {
+      return [];
+    }
+
+    const routes: RouteDefinition[] = [];
+
+    for (const layer of router.stack) {
+      if (layer.route) {
+        const routePath = this.combinePaths(basePath, layer.route.path);
+        const methods = Object.entries(layer.route.methods ?? {})
+          .filter(([, isEnabled]) => Boolean(isEnabled))
+          .map(([method]) => method.toUpperCase());
+
+        for (const method of methods) {
+          routes.push({ method, path: routePath });
+        }
+        continue;
+      }
+
+      if (layer.name === 'router' && layer.handle) {
+        routes.push(...this.extractRoutesFromRouter(layer.handle, basePath));
+      }
+    }
+
+    return routes;
+  }
+
+  private combinePaths(basePath: string, routePath: string): string {
+    const trimmedBase = basePath === '/' ? '' : basePath.replace(/\/+$/, '');
+    const trimmedRoute = routePath === '/' ? '' : routePath.replace(/^\/+/, '');
+
+    const combined = [trimmedBase, trimmedRoute].filter(Boolean).join('/');
+
+    if (!combined) {
+      return '/';
+    }
+
+    return combined.startsWith('/') ? combined : `/${combined}`;
+  }
+
+  private buildRoutesTable(routes: RouteDefinition[]): string {
+    const methodHeader = 'Method';
+    const pathHeader = 'Path';
+    const methodWidth = Math.max(methodHeader.length, ...routes.map((route) => route.method.length));
+    const pathWidth = Math.max(pathHeader.length, ...routes.map((route) => route.path.length));
+
+    const horizontalBorder = `+${'-'.repeat(methodWidth + 2)}+${'-'.repeat(pathWidth + 2)}+`;
+    const headerRow = `| ${methodHeader.padEnd(methodWidth)} | ${pathHeader.padEnd(pathWidth)} |`;
+    const routeRows = routes.map((route) => `| ${route.method.padEnd(methodWidth)} | ${route.path.padEnd(pathWidth)} |`);
+
+    return [horizontalBorder, headerRow, horizontalBorder, ...routeRows, horizontalBorder].join('\n');
+  }
+
+  private getMethodRank(method: string): number {
+    const index = METHOD_ORDER.indexOf(method);
+    return index === -1 ? METHOD_ORDER.length : index;
+  }
 }
+
+const METHOD_ORDER: string[] = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD', 'ALL'];
+
+type RouteDefinition = {
+  method: string;
+  path: string;
+};
+
+type ExpressRoute = {
+  path: string;
+  methods: Record<string, boolean>;
+};
+
+type ExpressLayer = {
+  route?: ExpressRoute;
+  name?: string;
+  handle?: ExpressRouterWithStack;
+};
+
+type ExpressRouterWithStack = ExpressRouter & {
+  stack?: ExpressLayer[];
+};

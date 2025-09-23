@@ -6,6 +6,7 @@
 - [x] Create user-management bounded context with Clean Architecture.
 - [x] Implement graceful shutdown functionality for Express server.
 - [x] Refactor controllers to rely on centralized error handling middleware with express-async-handler.
+- [x] Display registered HTTP routes during server startup.
 
 ## Discovered During Work
 
