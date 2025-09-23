@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+import { injectable } from 'inversify';
 import { UserRepository } from '../../application/ports/user-repository.port';
 import { User, UserSnapshot } from '../../domain/entities/user';
 import { BirthDate } from '../../domain/value-objects/birth-date';
@@ -5,6 +7,7 @@ import { Email } from '../../domain/value-objects/email';
 import { FullName } from '../../domain/value-objects/full-name';
 import { Gender } from '../../domain/value-objects/gender';
 
+@injectable()
 export class InMemoryUserRepository implements UserRepository {
   private users: Map<string, UserSnapshot> = new Map();
 
