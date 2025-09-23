@@ -5,12 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --runInBand",
-    "dev": "npx ts-node src/index.ts",
+    "dev": "pnpm ts-node src/index.ts",
     "lint": "eslint . --ext .ts",
-    "lint:fix": "npm run lint --fix",
+    "lint:fix": "pnpm lint --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "build": "rm -rf dist && npx tsc",
+    "build": "rm -rf dist && pnpm exec tsc",
     "test:watch": "jest --watch --runInBand"
   },
   "keywords": [],
