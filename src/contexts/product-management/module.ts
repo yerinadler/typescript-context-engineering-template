@@ -34,9 +34,9 @@ export class ProductManagementModule implements ModuleDefinition {
 
   /**
    * Export services that other modules can use
+   * Only application layer components should be exported for modular monolith
    */
   exports = [
-    TYPES.ProductRepository,
     TYPES.CreateProductUseCase,
     TYPES.GetProductByIdUseCase,
     TYPES.ListProductsUseCase,

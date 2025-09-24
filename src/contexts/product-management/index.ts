@@ -1,30 +1,3 @@
 // InversifyJS-based exports
 export { ProductManagementModule } from './module';
 export { ProductController } from './presentation/controllers/product.controller.inversify';
-
-// Legacy exports (for backward compatibility during migration)
-import { CreateProductUseCase } from './application/use-cases/create-product.use-case';
-import { GetProductByIdUseCase } from './application/use-cases/get-product-by-id.use-case';
-import { ListProductsUseCase } from './application/use-cases/list-products.use-case';
-import { UpdateProductPriceUseCase } from './application/use-cases/update-product-price.use-case';
-import { InMemoryProductRepository } from './infrastructure/persistence/in-memory-product-repository';
-import { ProductController as LegacyProductController } from './presentation/controllers/product.controller';
-
-/**
- * @deprecated Use ProductManagementModule with InversifyJS instead
- */
-export const createProductManagementController = (): LegacyProductController => {
-  const repository = new InMemoryProductRepository();
-
-  const createProductUseCase = new CreateProductUseCase(repository);
-  const getProductByIdUseCase = new GetProductByIdUseCase(repository);
-  const listProductsUseCase = new ListProductsUseCase(repository);
-  const updateProductPriceUseCase = new UpdateProductPriceUseCase(repository);
-
-  return new LegacyProductController({
-    createProductUseCase,
-    getProductByIdUseCase,
-    listProductsUseCase,
-    updateProductPriceUseCase,
-  });
-};
