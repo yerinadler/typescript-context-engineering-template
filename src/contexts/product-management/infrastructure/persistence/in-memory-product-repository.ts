@@ -1,7 +1,10 @@
+import 'reflect-metadata';
+import { injectable } from 'inversify';
 import { ProductRepository } from '../../application/ports/product-repository';
 import { Product } from '../../domain/entities/product';
 import { BaseRepository } from '../../shared/core/base.repository';
 
+@injectable()
 export class InMemoryProductRepository extends BaseRepository<Product> implements ProductRepository {
   private readonly byId = new Map<string, Product>();
   private readonly skuIndex = new Map<string, string>();

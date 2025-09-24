@@ -1,4 +1,7 @@
+import 'reflect-metadata';
 import { randomUUID } from 'crypto';
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../../shared/di';
 import { ConflictError, ValidationError } from '../../../../shared/errors/application-error';
 import { User } from '../../domain/entities/user';
 import { DomainError } from '../../domain/errors/domain-error';
@@ -9,8 +12,9 @@ import { Gender } from '../../domain/value-objects/gender';
 import { CreateUserDto, toUserDto, UserDto } from '../dto/user.dto';
 import { UserRepository } from '../ports/user-repository.port';
 
+@injectable()
 export class CreateUserUseCase {
-  constructor(private userRepository: UserRepository) {}
+  constructor(@inject(TYPES.UserRepository) private userRepository: UserRepository) {}
 
   async execute(dto: CreateUserDto): Promise<UserDto> {
     try {

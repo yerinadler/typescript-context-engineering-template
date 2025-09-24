@@ -1,7 +1,9 @@
+import 'reflect-metadata';
 import type { Request, Response } from 'express';
-import { Router as ExpressRouter } from 'express';
-import expressAsyncHandler from 'express-async-handler';
+import { inject } from 'inversify';
+import { controller, httpGet, httpPost, httpPut, request, response } from 'inversify-express-utils';
 import { createSuccessResponse } from '../../../../shared/api';
+import { TYPES } from '../../../../shared/di';
 import { BadRequestError } from '../../../../shared/errors';
 import { CreateProductDTO } from '../../application/dto/create-product.dto';
 import { UpdateProductPriceDTO } from '../../application/dto/update-product-price.dto';
@@ -10,45 +12,30 @@ import { GetProductByIdUseCase } from '../../application/use-cases/get-product-b
 import { ListProductsUseCase } from '../../application/use-cases/list-products.use-case';
 import { UpdateProductPriceUseCase } from '../../application/use-cases/update-product-price.use-case';
 
-type ProductControllerDependencies = {
-  createProductUseCase: CreateProductUseCase;
-  getProductByIdUseCase: GetProductByIdUseCase;
-  listProductsUseCase: ListProductsUseCase;
-  updateProductPriceUseCase: UpdateProductPriceUseCase;
-};
-
+@controller('/products')
 export class ProductController {
-  public readonly basePath: string = '/products';
-  private readonly _router: ExpressRouter;
+  constructor(
+    @inject(TYPES.CreateProductUseCase) private readonly createProductUseCase: CreateProductUseCase,
+    @inject(TYPES.GetProductByIdUseCase) private readonly getProductByIdUseCase: GetProductByIdUseCase,
+    @inject(TYPES.ListProductsUseCase) private readonly listProductsUseCase: ListProductsUseCase,
+    @inject(TYPES.UpdateProductPriceUseCase) private readonly updateProductPriceUseCase: UpdateProductPriceUseCase,
+  ) {}
 
-  constructor(private readonly dependencies: ProductControllerDependencies) {
-    this._router = ExpressRouter();
-    this.initializeRoutes();
-  }
-
-  get router(): ExpressRouter {
-    return this._router;
-  }
-
-  private initializeRoutes(): void {
-    this._router.get('/', expressAsyncHandler(this.listProducts.bind(this)));
-    this._router.get('/:id', expressAsyncHandler(this.getProduct.bind(this)));
-    this._router.post('/', expressAsyncHandler(this.createProduct.bind(this)));
-    this._router.put('/:id/price', expressAsyncHandler(this.updatePrice.bind(this)));
-  }
-
-  private async listProducts(_req: Request, res: Response): Promise<void> {
-    const products = await this.dependencies.listProductsUseCase.execute();
+  @httpGet('/')
+  async listProducts(@request() _req: Request, @response() res: Response): Promise<void> {
+    const products = await this.listProductsUseCase.execute();
     res.json(createSuccessResponse('PRODUCTS_FETCHED', 'products retrieved', products));
   }
 
-  private async getProduct(req: Request, res: Response): Promise<void> {
+  @httpGet('/:id')
+  async getProduct(@request() req: Request, @response() res: Response): Promise<void> {
     const productId = this.getRequiredString(req.params?.id, 'product id');
-    const product = await this.dependencies.getProductByIdUseCase.execute(productId);
+    const product = await this.getProductByIdUseCase.execute(productId);
     res.json(createSuccessResponse('PRODUCT_FETCHED', 'product retrieved', product));
   }
 
-  private async createProduct(req: Request, res: Response): Promise<void> {
+  @httpPost('/')
+  async createProduct(@request() req: Request, @response() res: Response): Promise<void> {
     const payload = req.body ?? {};
     const priceCents = typeof payload.priceCents === 'number' ? payload.priceCents : Number(payload.priceCents);
     const description = this.getOptionalString(payload.description, 'description');
@@ -60,12 +47,13 @@ export class ProductController {
       description,
     );
 
-    const product = await this.dependencies.createProductUseCase.execute(dto);
+    const product = await this.createProductUseCase.execute(dto);
 
     res.status(201).json(createSuccessResponse('PRODUCT_CREATED', 'product created', product));
   }
 
-  private async updatePrice(req: Request, res: Response): Promise<void> {
+  @httpPut('/:id/price')
+  async updatePrice(@request() req: Request, @response() res: Response): Promise<void> {
     const payload = req.body ?? {};
     const priceCents = typeof payload.priceCents === 'number' ? payload.priceCents : Number(payload.priceCents);
     const dto = new UpdateProductPriceDTO(
@@ -74,7 +62,7 @@ export class ProductController {
       this.getRequiredString(payload.currency, 'currency'),
     );
 
-    const product = await this.dependencies.updateProductPriceUseCase.execute(dto);
+    const product = await this.updateProductPriceUseCase.execute(dto);
 
     res.json(createSuccessResponse('PRODUCT_PRICE_UPDATED', 'product price updated', product));
   }

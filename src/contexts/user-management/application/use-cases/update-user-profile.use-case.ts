@@ -1,3 +1,6 @@
+import 'reflect-metadata';
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../../shared/di';
 import { NotFoundError, ConflictError, ValidationError } from '../../../../shared/errors/application-error';
 import { DomainError } from '../../domain/errors/domain-error';
 import { BirthDate } from '../../domain/value-objects/birth-date';
@@ -7,8 +10,9 @@ import { Gender } from '../../domain/value-objects/gender';
 import { UpdateUserProfileDto, toUserDto, UserDto } from '../dto/user.dto';
 import { UserRepository } from '../ports/user-repository.port';
 
+@injectable()
 export class UpdateUserProfileUseCase {
-  constructor(private userRepository: UserRepository) {}
+  constructor(@inject(TYPES.UserRepository) private userRepository: UserRepository) {}
 
   async execute(id: string, dto: UpdateUserProfileDto): Promise<UserDto> {
     try {
