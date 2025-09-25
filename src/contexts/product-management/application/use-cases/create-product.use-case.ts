@@ -1,8 +1,8 @@
 import 'reflect-metadata';
-import { randomUUID } from 'crypto';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../../../../shared/di';
 import { ConflictError, ValidationError } from '../../../../shared/errors';
+import { generateUuidV7 } from '../../../../shared/utils/uuid';
 import { Product } from '../../domain/entities/product';
 import { DomainError } from '../../domain/errors/domain-error';
 import { Money } from '../../domain/value-objects/money';
@@ -35,7 +35,7 @@ export class CreateProductUseCase extends BaseUseCase<CreateProductDTO, ProductD
       }
 
       const product = Product.create({
-        id: randomUUID(),
+        id: generateUuidV7(),
         name,
         sku,
         ...(dto.description !== undefined ? { description: dto.description } : {}),

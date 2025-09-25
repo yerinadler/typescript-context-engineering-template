@@ -1,8 +1,8 @@
 import 'reflect-metadata';
-import { randomUUID } from 'crypto';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../../../../shared/di';
 import { ConflictError, ValidationError } from '../../../../shared/errors/application-error';
+import { generateUuidV7 } from '../../../../shared/utils/uuid';
 import { User } from '../../domain/entities/user';
 import { DomainError } from '../../domain/errors/domain-error';
 import { BirthDate } from '../../domain/value-objects/birth-date';
@@ -32,7 +32,7 @@ export class CreateUserUseCase {
 
       // Create user entity
       const user = User.create({
-        id: randomUUID(),
+        id: generateUuidV7(),
         fullName,
         email,
         gender,
