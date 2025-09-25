@@ -18,8 +18,4 @@ export const TYPES = {
   UpdateUserProfileUseCase: Symbol.for('UpdateUserProfileUseCase'),
   UpdateUserStatusUseCase: Symbol.for('UpdateUserStatusUseCase'),
 
-  // Controllers
-  ProductController: Symbol.for('ProductController'),
-  UserController: Symbol.for('UserController'),
-  WelcomeController: Symbol.for('WelcomeController'),
 } as const;

@@ -6,7 +6,7 @@ import { GetProductByIdUseCase } from './application/use-cases/get-product-by-id
 import { ListProductsUseCase } from './application/use-cases/list-products.use-case';
 import { UpdateProductPriceUseCase } from './application/use-cases/update-product-price.use-case';
 import { InMemoryProductRepository } from './infrastructure/persistence/in-memory-product-repository';
-import { ProductController } from './presentation/controllers/product.controller.inversify';
+import './presentation/controllers/product.controller.inversify';
 
 /**
  * Product Management Module Definition
@@ -27,9 +27,6 @@ export class ProductManagementModule implements ModuleDefinition {
     container.bind<GetProductByIdUseCase>(TYPES.GetProductByIdUseCase).to(GetProductByIdUseCase);
     container.bind<ListProductsUseCase>(TYPES.ListProductsUseCase).to(ListProductsUseCase);
     container.bind<UpdateProductPriceUseCase>(TYPES.UpdateProductPriceUseCase).to(UpdateProductPriceUseCase);
-
-    // Presentation layer - Controllers
-    container.bind<ProductController>(TYPES.ProductController).to(ProductController);
   }
 
   /**

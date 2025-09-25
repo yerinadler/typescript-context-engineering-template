@@ -8,6 +8,9 @@ This project utilises the following tools, frameworks, and libraries to build a 
 - **Postgres** - The primary database
 - **Prisma** - The primary ORM for data modeling and migrations
 
+### Prisma models
+Since this project is a modular monolith, the main `prisma.schema` acts only as an entrypoint that imports other schema. In the early stage, only a single prisma schema file is used.
+
 ## Foundational Framework
 The foundational framework is the fundamental building blocks that enable this modular monolith application. All the components of the foundational framework is located in the `src/shared/` directory.
 
@@ -36,7 +39,9 @@ The `src/shared/controller` contains a router interface in `controller.interface
 ### API Utilities
 The `src/shared/api` folder centralises API response helpers. Use `createSuccessResponse` and `createErrorResponse` to ensure responses follow the documented `BaseResponse` and `BaseErrorResponse` shapes.
 
-### Logging
+### Observability
+The observability for this project relies on `Opentelemetry` which is an open-source unified frameworks for modern observability.
+#### Logging
 The `src/shared/logging` directory contains the framework-wide logging abstraction. It provides a type-safe interface that hides the Winston implementation details while supporting:
 
 - **Structured JSON output** for consistent log ingestion.

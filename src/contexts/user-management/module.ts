@@ -7,7 +7,7 @@ import { ListUsersUseCase } from './application/use-cases/list-users.use-case';
 import { UpdateUserProfileUseCase } from './application/use-cases/update-user-profile.use-case';
 import { UpdateUserStatusUseCase } from './application/use-cases/update-user-status.use-case';
 import { InMemoryUserRepository } from './infrastructure/repositories/in-memory-user.repository';
-import { UserController } from './presentation/controllers/user.controller.inversify';
+import './presentation/controllers/user.controller.inversify';
 
 /**
  * User Management Module Definition
@@ -29,9 +29,6 @@ export class UserManagementModule implements ModuleDefinition {
     container.bind<ListUsersUseCase>(TYPES.ListUsersUseCase).to(ListUsersUseCase);
     container.bind<UpdateUserProfileUseCase>(TYPES.UpdateUserProfileUseCase).to(UpdateUserProfileUseCase);
     container.bind<UpdateUserStatusUseCase>(TYPES.UpdateUserStatusUseCase).to(UpdateUserStatusUseCase);
-
-    // Presentation layer - Controllers
-    container.bind<UserController>(TYPES.UserController).to(UserController);
   }
 
   /**

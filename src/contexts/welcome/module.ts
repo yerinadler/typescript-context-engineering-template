@@ -1,6 +1,6 @@
 import { Container } from 'inversify';
-import { ModuleDefinition, TYPES } from '../../shared/di';
-import { WelcomeController } from './controllers/welcome.controller.inversify';
+import { ModuleDefinition } from '../../shared/di';
+import './controllers/welcome.controller.inversify';
 
 /**
  * Welcome Module Definition
@@ -12,9 +12,8 @@ export class WelcomeModule implements ModuleDefinition {
   /**
    * Configure the container with welcome module dependencies
    */
-  configure(container: Container): void {
-    // Presentation layer - Controllers
-    container.bind<WelcomeController>(TYPES.WelcomeController).to(WelcomeController);
+  configure(_: Container): void {
+    // Presentation bindings handled by controller decorators.
   }
 
   /**
