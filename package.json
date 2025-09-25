@@ -44,8 +44,11 @@
     "express-async-handler": "^1.2.0",
     "inversify": "^6.2.2",
     "inversify-express-utils": "^6.5.0",
+    "prisma": "^6.16.2",
+    "@prisma/client": "^6.16.2",
     "reflect-metadata": "^0.2.2",
     "uuid": "^13.0.0",
-    "winston": "^3.17.0"
+    "winston": "^3.17.0",
+    "zod": "^4.1.11"
   }
 }

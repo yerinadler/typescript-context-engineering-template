@@ -30,3 +30,4 @@ Thumbs.db
 
 # pnpm related files
 .pnpm-store/
+/src/generated/prisma

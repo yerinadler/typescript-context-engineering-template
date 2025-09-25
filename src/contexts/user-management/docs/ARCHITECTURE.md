@@ -17,7 +17,7 @@ so business rules remain independent from web frameworks and infrastructure.
 - **Application** – Use cases coordinate domain objects and depend on abstract ports
   only (`UserRepository`). They translate the domain to DTOs consumed by outer
   layers.
-- **Infrastructure** – Adapters (currently an in-memory repository) satisfy
+- **Infrastructure** – Adapters (Prisma-backed repository) satisfy
   application ports. Swapping to Prisma/Postgres only requires replacing the
   repository implementation.
 - **Presentation** – The `UserController` exposes HTTP endpoints that invoke
@@ -42,7 +42,7 @@ so business rules remain independent from web frameworks and infrastructure.
 
 ## Testing Guidance
 - Unit test use cases and domain value objects when adding new rules.
-- Replace the in-memory repository with specialised doubles in tests to isolate
+- Replace the infrastructure repository with specialised doubles in tests to isolate
   behaviour.
 - Avoid testing HTTP controllers here; rely on integration tests at the
   application level instead.

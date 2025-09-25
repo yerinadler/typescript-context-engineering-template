@@ -12,6 +12,7 @@ const config: Config = {
   passWithNoTests: true,
   moduleNameMapper: {
     '^uuid$': '<rootDir>/src/test-utils/uuid-test-double.ts',
+    '^@prisma/client$': '<rootDir>/src/test-utils/prisma-client-test-double.ts',
   },
   globals: {
     'ts-jest': {

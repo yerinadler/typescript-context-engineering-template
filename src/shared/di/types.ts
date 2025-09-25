@@ -2,6 +2,9 @@
 
 // Base identifiers for common services
 export const TYPES = {
+  // Shared infrastructure
+  PrismaClient: Symbol.for('PrismaClient'),
+
   // Repository interfaces
   ProductRepository: Symbol.for('ProductRepository'),
   UserRepository: Symbol.for('UserRepository'),

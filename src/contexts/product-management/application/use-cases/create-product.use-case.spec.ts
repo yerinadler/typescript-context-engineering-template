@@ -1,11 +1,12 @@
 import { ConflictError, ValidationError } from '../../../../shared/errors';
-import { InMemoryProductRepository } from '../../infrastructure/persistence/in-memory-product-repository';
+import { Product } from '../../domain/entities/product';
+import { InMemoryProductRepositoryDouble } from '../../test-utils/in-memory-product.repository.double';
 import { CreateProductDTO } from '../dto/create-product.dto';
 import { CreateProductUseCase } from './create-product.use-case';
 
 describe('CreateProductUseCase', () => {
   const buildUseCase = () => {
-    const repository = new InMemoryProductRepository();
+    const repository = new InMemoryProductRepositoryDouble();
     const useCase = new CreateProductUseCase(repository);
     return { repository, useCase };
   };

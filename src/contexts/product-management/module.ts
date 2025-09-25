@@ -5,7 +5,7 @@ import { CreateProductUseCase } from './application/use-cases/create-product.use
 import { GetProductByIdUseCase } from './application/use-cases/get-product-by-id.use-case';
 import { ListProductsUseCase } from './application/use-cases/list-products.use-case';
 import { UpdateProductPriceUseCase } from './application/use-cases/update-product-price.use-case';
-import { InMemoryProductRepository } from './infrastructure/persistence/in-memory-product-repository';
+import { PrismaProductRepository } from './infrastructure/persistence/prisma-product.repository';
 import './presentation/controllers/product.controller.inversify';
 
 /**
@@ -20,7 +20,7 @@ export class ProductManagementModule implements ModuleDefinition {
    */
   configure(container: Container): void {
     // Infrastructure layer - Repositories
-    container.bind<ProductRepository>(TYPES.ProductRepository).to(InMemoryProductRepository);
+    container.bind<ProductRepository>(TYPES.ProductRepository).to(PrismaProductRepository);
 
     // Application layer - Use cases
     container.bind<CreateProductUseCase>(TYPES.CreateProductUseCase).to(CreateProductUseCase);

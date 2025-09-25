@@ -7,6 +7,8 @@
 - [x] Implement graceful shutdown functionality for Express server.
 - [x] Refactor controllers to rely on centralized error handling middleware with express-async-handler.
 - [x] Display registered HTTP routes during server startup.
+- [x] Replace in-memory repositories with Prisma-backed persistence and supporting tests.
+- [x] Standardise request validation with shared Zod schemas and supporting tests.
 
 ## Discovered During Work
 
@@ -22,3 +24,7 @@
 - [x] All tests pass including graceful shutdown, timeout, error handling, and edge cases
 - [x] Code passes linting and builds successfully
 - [x] Follows framework patterns established in shared server infrastructure
+
+## Framework Setup
+### Prisma
+- [x] Install Prisma

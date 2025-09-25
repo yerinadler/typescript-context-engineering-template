@@ -39,6 +39,9 @@ The `src/shared/controller` contains a router interface in `controller.interface
 ### API Utilities
 The `src/shared/api` folder centralises API response helpers. Use `createSuccessResponse` and `createErrorResponse` to ensure responses follow the documented `BaseResponse` and `BaseErrorResponse` shapes.
 
+### Validation
+The `src/shared/validation` module standardises request parsing with Zod schemas. Use the shared field helpers (e.g. `requiredString`, `requiredNumber`) together with `validateRequest` to replace manual parameter trimming and type coercion in controllers. All validation failures are converted to `BadRequestError` for consistent API responses.
+
 ### Observability
 The observability for this project relies on `Opentelemetry` which is an open-source unified frameworks for modern observability.
 #### Logging

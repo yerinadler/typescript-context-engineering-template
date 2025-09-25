@@ -6,7 +6,7 @@ import { GetUserByIdUseCase } from './application/use-cases/get-user-by-id.use-c
 import { ListUsersUseCase } from './application/use-cases/list-users.use-case';
 import { UpdateUserProfileUseCase } from './application/use-cases/update-user-profile.use-case';
 import { UpdateUserStatusUseCase } from './application/use-cases/update-user-status.use-case';
-import { InMemoryUserRepository } from './infrastructure/repositories/in-memory-user.repository';
+import { PrismaUserRepository } from './infrastructure/repositories/prisma-user.repository';
 import './presentation/controllers/user.controller.inversify';
 
 /**
@@ -21,7 +21,7 @@ export class UserManagementModule implements ModuleDefinition {
    */
   configure(container: Container): void {
     // Infrastructure layer - Repositories
-    container.bind<UserRepository>(TYPES.UserRepository).to(InMemoryUserRepository);
+    container.bind<UserRepository>(TYPES.UserRepository).to(PrismaUserRepository);
 
     // Application layer - Use cases
     container.bind<CreateUserUseCase>(TYPES.CreateUserUseCase).to(CreateUserUseCase);

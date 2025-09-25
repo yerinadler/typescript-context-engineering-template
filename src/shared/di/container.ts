@@ -1,5 +1,8 @@
 import { Container } from 'inversify';
+import { PrismaClient } from '../../generated/prisma';
+import { frameworkLogger } from '../logging';
 import { ModuleDefinition } from './module.interface';
+import { TYPES } from './types';
 
 /**
  * Application container manager
@@ -11,6 +14,29 @@ export class ApplicationContainer {
 
   constructor() {
     this._container = new Container({ defaultScope: 'Singleton' });
+    const prismaClient = new PrismaClient();
+    this._container.bind<PrismaClient>(TYPES.PrismaClient).toConstantValue(prismaClient);
+
+    const shutdown = async () => {
+      try {
+        await prismaClient.$disconnect();
+      } catch (error) {
+        frameworkLogger.error('Failed to disconnect Prisma client during shutdown', {
+          error: error as Error,
+        });
+      }
+    };
+
+    const handleSignal = (signal: NodeJS.Signals) => {
+      frameworkLogger.info(`Received ${signal}, shutting down Prisma client`);
+      void shutdown().finally(() => process.exit(0));
+    };
+
+    process.on('beforeExit', () => {
+      void shutdown();
+    });
+    process.on('SIGINT', handleSignal);
+    process.on('SIGTERM', handleSignal);
   }
 
   /**
