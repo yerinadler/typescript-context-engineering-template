@@ -8,4 +8,3 @@ const runtime: TelemetryRuntime = initializeTelemetry();
 export const telemetryEnabled = runtime.enabled;
 export const telemetryReady = runtime.ready;
 export const shutdownTelemetry = runtime.shutdown;
-
