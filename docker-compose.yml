@@ -7,5 +7,17 @@ services:
       POSTGRES_PASSWORD: password
     volumes:
       - pgdata:/var/lib/postgresql/data
+  otel-lgtm:
+    image: grafana/otel-lgtm:v0.11.10
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+      - 4317:4317
+      - 4318:4318
+    environment:
+      GF_PATHS_DATA: /data/grafana
+    volumes:
+      - otel-lgtm-data:/data
 volumes:
   pgdata:
+  otel-lgtm-data:

@@ -19,6 +19,20 @@ This repository is a starter kit for building context-engineered modular monolit
 4. Start the sample application with `pnpm dev` (runs `ts-node src/index.ts`).
 5. Run tests anytime with `pnpm test` or `pnpm test:watch`.
 
+### Optional: Run the observability stack
+
+Spin up the bundled OpenTelemetry backend with Docker Compose when you need
+Grafana dashboards, traces, or metrics locally:
+
+```bash
+docker compose up -d otel-lgtm
+```
+
+The stack exposes Grafana at <http://localhost:3000> (default credentials
+`admin` / `admin`) and accepts OTLP traffic on ports `4317` (gRPC) and `4318`
+(`http/protobuf`). Data is persisted in the `otel-lgtm-data` volume, so you can
+tear the container down safely with `docker compose down`.
+
 ## Available Scripts
 - `pnpm dev` – Run the entrypoint with hot reload through ts-node.
 - `pnpm test` – Execute the Jest suite in band (see `jest.config.ts`).
