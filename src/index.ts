@@ -20,7 +20,7 @@ async function bootstrap() {
   await server.registerModule(new ProductManagementModule());
 
   // Start server
-  await server.start(3000);
+  await server.start(3200);
 }
 
 bootstrap().catch((error) => {

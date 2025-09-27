@@ -1,7 +1,9 @@
 import 'reflect-metadata';
+import { Span } from '@opentelemetry/api';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../../../../shared/di';
 import { ConflictError, ValidationError } from '../../../../shared/errors/application-error';
+import { withSpan, getTracer } from '../../../../shared/telemetry/tracer';
 import { generateUuidV7 } from '../../../../shared/utils/uuid';
 import { User } from '../../domain/entities/user';
 import { DomainError } from '../../domain/errors/domain-error';
@@ -12,42 +14,46 @@ import { Gender } from '../../domain/value-objects/gender';
 import { CreateUserDto, toUserDto, UserDto } from '../dto/user.dto';
 import { UserRepository } from '../ports/user-repository.port';
 
+const tracer = getTracer('user-management');
+
 @injectable()
 export class CreateUserUseCase {
   constructor(@inject(TYPES.UserRepository) private userRepository: UserRepository) {}
 
   async execute(dto: CreateUserDto): Promise<UserDto> {
-    try {
-      // Create value objects (this will validate the input)
-      const fullName = FullName.create(dto.fullName);
-      const email = Email.create(dto.email);
-      const gender = Gender.create(dto.gender);
-      const birthDate = BirthDate.create(dto.birthDate);
+    return withSpan(tracer, 'create a new user', async (_: Span) => {
+      try {
+        // Create value objects (this will validate the input)
+        const fullName = FullName.create(dto.fullName);
+        const email = Email.create(dto.email);
+        const gender = Gender.create(dto.gender);
+        const birthDate = BirthDate.create(dto.birthDate);
 
-      // Check if user with email already exists
-      const existingUser = await this.userRepository.findByEmail(email.value);
-      if (existingUser) {
-        throw new ConflictError('user with this email already exists');
+        // Check if user with email already exists
+        const existingUser = await this.userRepository.findByEmail(email.value);
+        if (existingUser) {
+          throw new ConflictError('user with this email already exists');
+        }
+
+        // Create user entity
+        const user = User.create({
+          id: generateUuidV7(),
+          fullName,
+          email,
+          gender,
+          birthDate,
+        });
+
+        // Save user
+        await this.userRepository.save(user);
+
+        return toUserDto(user);
+      } catch (error) {
+        if (error instanceof DomainError) {
+          throw new ValidationError(error.message);
+        }
+        throw error;
       }
-
-      // Create user entity
-      const user = User.create({
-        id: generateUuidV7(),
-        fullName,
-        email,
-        gender,
-        birthDate,
-      });
-
-      // Save user
-      await this.userRepository.save(user);
-
-      return toUserDto(user);
-    } catch (error) {
-      if (error instanceof DomainError) {
-        throw new ValidationError(error.message);
-      }
-      throw error;
-    }
+    });
   }
 }

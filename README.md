@@ -33,6 +33,23 @@ The stack exposes Grafana at <http://localhost:3000> (default credentials
 (`http/protobuf`). Data is persisted in the `otel-lgtm-data` volume, so you can
 tear the container down safely with `docker compose down`.
 
+Add the following variables to your `.env` file so the application exports
+telemetry to the bundled collector:
+
+```bash
+OTEL_SERVICE_NAME="typescript-context-engineering-template"
+OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4318"
+OTEL_TRACES_ENABLED="true"
+OTEL_METRICS_ENABLED="true"
+OTEL_LOG_LEVEL="info"
+```
+
+The SDK automatically appends the required `/v1/traces` and `/v1/metrics`
+paths when the endpoint omits them, so you only need to override the base URL
+for most setups. Provide `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` or
+`OTEL_EXPORTER_OTLP_METRICS_ENDPOINT` only when a collector exposes
+signal-specific URLs.
+
 ## Available Scripts
 - `pnpm dev` – Run the entrypoint with hot reload through ts-node.
 - `pnpm test` – Execute the Jest suite in band (see `jest.config.ts`).

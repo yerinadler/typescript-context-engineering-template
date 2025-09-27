@@ -87,16 +87,57 @@ const resolveSamplerRatio = (envName: Environment, configured?: string): number 
   return 1;
 };
 
-const resolveEndpoint = (primary?: string, fallback?: string): string => {
-  if (primary && primary.trim().length > 0) {
-    return primary.trim();
+const stripTrailingSlash = (value: string): string => {
+  if (value.endsWith('/')) {
+    return value.slice(0, -1);
   }
 
-  if (fallback && fallback.trim().length > 0) {
-    return fallback.trim();
+  return value;
+};
+
+const ensureSignalPath = (endpoint: string, signalPath: string): string => {
+  try {
+    const url = new URL(endpoint);
+    const normalizedPath = signalPath.startsWith('/') ? signalPath : `/${signalPath}`;
+
+    if (url.pathname === '/' || url.pathname.length === 0) {
+      url.pathname = normalizedPath;
+    } else if (url.pathname === `${normalizedPath}/`) {
+      url.pathname = normalizedPath;
+    }
+
+    return stripTrailingSlash(url.toString());
+  } catch {
+    return stripTrailingSlash(endpoint);
+  }
+};
+
+const normalizeEndpoint = (value: string | undefined, signalPath: string): string | undefined => {
+  if (!value) {
+    return undefined;
   }
 
-  return 'http://localhost:4318';
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return undefined;
+  }
+
+  return ensureSignalPath(trimmed, signalPath);
+};
+
+const resolveEndpoint = (signalPath: string, primary?: string, fallback?: string): string => {
+  const normalizedPrimary = normalizeEndpoint(primary, signalPath);
+  if (normalizedPrimary) {
+    return normalizedPrimary;
+  }
+
+  const normalizedFallback = normalizeEndpoint(fallback, signalPath);
+  if (normalizedFallback) {
+    return normalizedFallback;
+  }
+
+  const normalizedPath = signalPath.startsWith('/') ? signalPath : `/${signalPath}`;
+  return `http://localhost:4318${normalizedPath}`;
 };
 
 const resolveServiceVersion = (): string => process.env.npm_package_version ?? '0.0.0';
@@ -108,10 +149,12 @@ export const createTelemetryConfig = (): TelemetryConfig => {
   const metricsEnabled = enabled && parseBoolean(process.env.OTEL_METRICS_ENABLED, true);
 
   const traceEndpoint = resolveEndpoint(
+    '/v1/traces',
     process.env.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT,
     process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
   );
   const metricsEndpoint = resolveEndpoint(
+    '/v1/metrics',
     process.env.OTEL_EXPORTER_OTLP_METRICS_ENDPOINT,
     process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
   );
