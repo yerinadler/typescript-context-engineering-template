@@ -9,6 +9,7 @@
 - [x] Display registered HTTP routes during server startup.
 - [x] Replace in-memory repositories with Prisma-backed persistence and supporting tests.
 - [x] Standardise request validation with shared Zod schemas and supporting tests.
+- [x] Implement OpenTelemetry SDK integration with automatic tracing, metrics, and Winston correlation.
 
 ## Discovered During Work
 

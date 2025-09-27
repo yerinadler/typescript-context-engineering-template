@@ -43,12 +43,23 @@ The `src/shared/api` folder centralises API response helpers. Use `createSuccess
 The `src/shared/validation` module standardises request parsing with Zod schemas. Use the shared field helpers (e.g. `requiredString`, `requiredNumber`) together with `validateRequest` to replace manual parameter trimming and type coercion in controllers. All validation failures are converted to `BadRequestError` for consistent API responses.
 
 ### Observability
-The observability for this project relies on `Opentelemetry` which is an open-source unified frameworks for modern observability.
+The observability for this project relies on `OpenTelemetry`, which ships with automatic tracing and metrics instrumentation.
+
+#### Telemetry Runtime
+- `src/shared/telemetry` initialises the `NodeSDK` with OTLP trace and metric exporters the moment the application starts (`src/index.ts` awaits telemetry before loading Express).
+- Automatic instrumentations cover HTTP, Express, PostgreSQL, and Prisma. Use environment toggles (`OTEL_TRACES_ENABLED`, `OTEL_METRICS_ENABLED`, `OTEL_SDK_DISABLED`) to disable specific signals when needed.
+- Sampling defaults to `1.0` outside production-like environments and can be tuned via `OTEL_TRACES_SAMPLER_RATIO`.
+- Hooks on `SIGINT`/`SIGTERM` flush exporters before shutdown to avoid dropping telemetry data.
+
+#### Manual Tracing Helpers
+- Import `getTracer`, `withSpan`, or `withSpanSync` from `src/shared/telemetry` to wrap domain logic in custom spans.
+- Helper functions automatically manage span lifecycle, attach optional attributes, and set `SpanStatusCode.ERROR` with recorded exceptions when handlers throw.
+
 #### Logging
 The `src/shared/logging` directory contains the framework-wide logging abstraction. It provides a type-safe interface that hides the Winston implementation details while supporting:
 
 - **Structured JSON output** for consistent log ingestion.
 - **Environment-aware log levels**, defaulting to `debug` locally and `info` in production-like environments.
-- **Trace and span correlation** fields (`trace_id` and `span_id`) to integrate with future OpenTelemetry instrumentation.
+- **Trace correlation** fields (`trace_id`, `span_id`, `trace_flags`) sourced from the active OpenTelemetry context so all logs align with distributed traces.
 
 The module exports a singleton `frameworkLogger` instance, ensuring the Winston logger is only initialised once and reused across the application. Use `createLogger` to create child loggers with additional contextual metadata when needed.

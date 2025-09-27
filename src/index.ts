@@ -1,10 +1,17 @@
-import 'reflect-metadata';
-import { ProductManagementModule } from './contexts/product-management/module';
-import { UserManagementModule } from './contexts/user-management/module';
-import { WelcomeModule } from './contexts/welcome/module';
-import { InversifyServer } from './shared/server/inversify-server';
+import { telemetryReady } from './shared/telemetry';
 
 async function bootstrap() {
+  await telemetryReady;
+  await import('reflect-metadata');
+
+  const [{ InversifyServer }, { WelcomeModule }, { UserManagementModule }, { ProductManagementModule }] =
+    await Promise.all([
+      import('./shared/server/inversify-server'),
+      import('./contexts/welcome/module'),
+      import('./contexts/user-management/module'),
+      import('./contexts/product-management/module'),
+    ]);
+
   const server = new InversifyServer();
 
   // Register modules

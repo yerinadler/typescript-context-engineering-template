@@ -26,6 +26,17 @@ This repository is a starter kit for building context-engineered modular monolit
 - `pnpm format` / `pnpm format:check` – Enforce Prettier formatting rules (`prettier.config.cjs`).
 - `pnpm build` – Emit production-ready TypeScript build into `dist/`.
 
+## Observability & Telemetry
+The application boots with OpenTelemetry auto-instrumentation before any other framework code loads. Traces and metrics export to an OTLP-compatible backend and Winston logs automatically include `trace_id`, `span_id`, and `trace_flags` from the active span.
+
+- Configure behaviour via environment variables:
+  - `OTEL_SERVICE_NAME`, `OTEL_EXPORTER_OTLP_ENDPOINT`, `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT`, and `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT`.
+  - Toggle features with `OTEL_TRACES_ENABLED`, `OTEL_METRICS_ENABLED`, and `OTEL_SDK_DISABLED`.
+  - Control sampling using `OTEL_TRACES_SAMPLER_RATIO` (defaults to `1` locally, `0.1` in production-like environments).
+  - Supply custom headers for secured collectors using `OTEL_EXPORTER_OTLP_HEADERS` (`key=value,key2=value2`).
+- Use `getTracer`/`withSpan` helpers from `src/shared/telemetry` for manual spans in domain logic when richer attributes or custom events are required.
+- Graceful shutdown hooks ensure telemetry exporters flush on `SIGINT`/`SIGTERM`.
+
 ## Project Layout
 - `src/contexts` – Bounded contexts (modules) that own their domain logic.
 - `src/shared` – Framework and cross-cutting utilities shared across contexts.

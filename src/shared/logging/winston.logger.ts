@@ -1,3 +1,4 @@
+import { context as otelContext, isSpanContextValid, trace } from '@opentelemetry/api';
 import winston from 'winston';
 
 import { LogContext, LogLevel, Logger, LoggerOptions } from './logger.interface';
@@ -70,6 +71,10 @@ const mapContextToPayload = (context?: LogContext): Record<string, unknown> => {
     payload.span_id = context.spanId;
   }
 
+  if (context.traceFlags) {
+    payload.trace_flags = context.traceFlags;
+  }
+
   if (context.attributes && hasEntries(context.attributes)) {
     Object.assign(payload, context.attributes);
   }
@@ -110,6 +115,26 @@ const mergeContexts = (base?: LogContext, override?: LogContext): LogContext | u
   return merged;
 };
 
+const formatTraceFlags = (flags: number): string => flags.toString(16).padStart(2, '0').toUpperCase();
+
+const getActiveTelemetryContext = (): LogContext | undefined => {
+  const span = trace.getSpan(otelContext.active());
+  if (!span) {
+    return undefined;
+  }
+
+  const spanContext = span.spanContext();
+  if (!isSpanContextValid(spanContext)) {
+    return undefined;
+  }
+
+  return {
+    traceId: spanContext.traceId,
+    spanId: spanContext.spanId,
+    traceFlags: formatTraceFlags(spanContext.traceFlags),
+  };
+};
+
 class WinstonLogger implements Logger {
   private readonly defaultContext: LogContext | undefined;
 
@@ -121,7 +146,9 @@ class WinstonLogger implements Logger {
   }
 
   log(level: LogLevel, message: string, context?: LogContext): void {
-    const mergedContext = mergeContexts(this.defaultContext, context);
+    const activeContext = getActiveTelemetryContext();
+    const baseContext = mergeContexts(activeContext, this.defaultContext);
+    const mergedContext = mergeContexts(baseContext, context);
     this.logger.log({
       level,
       message,
